@@ -10,4 +10,4 @@ in the cloned directory.
 Simply create a `Library.uud` in your home directory.Put all your steam directories in it. Each new line is a different directory. <br/>
 Example contents of $Home/Library.uud:<br/>
 `/media/jason/HDD/SteamLibrary`<br/>
-Then just dotnet. `/Path/To/Build/ProtonWineManger.dll`
+Then just `dotnet /Path/To/Build/ProtonWineManger.dll`
