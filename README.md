@@ -8,6 +8,6 @@ Follow the [Microsoft Download Instructions](https://dotnet.microsoft.com/downlo
 in the cloned directory.
 ## Use Instructions
 Simply create a `Library.uud` in your home directory.Put all your steam directories in it. Each new line is a different directory. <br/>
-Example:<br/>
+Example contents of $Home/Library.uud:<br/>
 `/media/jason/HDD/SteamLibrary`<br/>
 Then just dotnet. `/Path/To/Build/ProtonWineManger.dll`
