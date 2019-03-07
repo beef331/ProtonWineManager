@@ -1,0 +1,11 @@
+/home/jason/ProtonWineManager/bin/Debug/netcoreapp2.2/ProtonWineManager.deps.json
+/home/jason/ProtonWineManager/bin/Debug/netcoreapp2.2/ProtonWineManager.runtimeconfig.json
+/home/jason/ProtonWineManager/bin/Debug/netcoreapp2.2/ProtonWineManager.runtimeconfig.dev.json
+/home/jason/ProtonWineManager/bin/Debug/netcoreapp2.2/ProtonWineManager.dll
+/home/jason/ProtonWineManager/bin/Debug/netcoreapp2.2/ProtonWineManager.pdb
+/home/jason/ProtonWineManager/obj/Debug/netcoreapp2.2/ProtonWineManager.csprojAssemblyReference.cache
+/home/jason/ProtonWineManager/obj/Debug/netcoreapp2.2/ProtonWineManager.csproj.CoreCompileInputs.cache
+/home/jason/ProtonWineManager/obj/Debug/netcoreapp2.2/ProtonWineManager.AssemblyInfoInputs.cache
+/home/jason/ProtonWineManager/obj/Debug/netcoreapp2.2/ProtonWineManager.AssemblyInfo.cs
+/home/jason/ProtonWineManager/obj/Debug/netcoreapp2.2/ProtonWineManager.dll
+/home/jason/ProtonWineManager/obj/Debug/netcoreapp2.2/ProtonWineManager.pdb
