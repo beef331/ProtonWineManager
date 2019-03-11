@@ -11,9 +11,14 @@ namespace ProtonWineManager
     {
         static string plLocation = System.Environment.GetEnvironmentVariable("HOME") + "/Library.uud",dbURL = "https://steamdb.info/app/{0}/", cache = "/CachedGames.uud";
         static List<string>  directories = new List<string>();
-        static Dictionary<string,string> idToPath = new Dictionary<string, string>(),idToName = new Dictionary<string, string>();
+        static Dictionary<string,string> idToPath = new Dictionary<string, string>(),idToName = new Dictionary<string, string>(), commandDesc = new Dictionary<string, string>();
         static void Main(string[] args)
         {
+            commandDesc.Add("-h","Displays all commands and their actions");
+            commandDesc.Add("-c","Clears cached games");
+            commandDesc.Add("-q","Quits application");
+
+
             cache = AppDomain.CurrentDomain.BaseDirectory + cache;
             System.Environment.SetEnvironmentVariable("PWD",AppDomain.CurrentDomain.BaseDirectory);
             if(File.Exists(plLocation)){
@@ -35,6 +40,7 @@ namespace ProtonWineManager
                     }
                 }
             }
+            FetchGames:;
             string gameID = "";
             foreach (string dir in directories)
             {
@@ -66,6 +72,24 @@ namespace ProtonWineManager
                 WriteColoredConsole(string.Format("[{0}] : {1} / APP ID : {2}",i,idToName[keys[i]],keys[i]),ConsoleColor.Yellow);
             }
             string response = Console.ReadLine();
+            string[] commandKeys = commandDesc.Keys.ToArray();
+            if(commandKeys.Contains(response)){
+                if(response.Equals("-h")){
+                    for(int i =0; i < commandKeys.Length;i++){
+                        WriteColoredConsole(commandKeys[i] + "\t" + commandDesc[commandKeys[i]],ConsoleColor.White);
+                    }
+                    goto ProtonWineManager;
+                }
+                if(response.Equals("-c")){
+                    File.Delete(cache);
+                    idToName.Clear();
+                    idToPath.Clear();
+                    goto FetchGames;
+                }
+                if(response.Equals("-q")){
+                    return;
+                }
+            }
             if(!response.Contains(" ")){
                 goto CommandError;
             }
