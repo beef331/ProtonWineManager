@@ -17,21 +17,24 @@ namespace ProtonWineManager
 		localJsonPath = AppDomain.CurrentDomain.BaseDirectory + "/Games.json";
 		static List<string> directories = new List<string>();
 		static Dictionary<string, string> idToPath = new Dictionary<string, string>(), idToName = new Dictionary<string, string>(), commandDesc = new Dictionary<string, string>();
+		static string[] keys, commandKeys;
 		static void Main(string[] args)
 		{
 			Init();
-            GetLibrary();
-            FetchGamesJson();
-            WineManager();
+			GetLibrary();
+			FetchGamesFromJson();
+			WineManager();
 		}
 		static void Init()
 		{
 			commandDesc.Add("-h", "Displays all commands and their actions");
 			commandDesc.Add("-c", "Clears Gamesjson");
+			commandDesc.Add("-cls", "Clears Screen");
 			commandDesc.Add("-q", "Quits application");
 			System.Environment.SetEnvironmentVariable("PWD", AppDomain.CurrentDomain.BaseDirectory);
+			commandKeys = commandDesc.Keys.ToArray();
 		}
-		static void FetchGamesJson()
+		static void FetchGamesFromJson()
 		{
 			if (!File.Exists(localJsonPath))
 			{
@@ -64,6 +67,14 @@ namespace ProtonWineManager
 					}
 				}
 			}
+			keys = idToName.Keys.ToArray();
+		}
+		static void ClearCache()
+		{
+			File.Delete(localJsonPath);
+			idToName.Clear();
+			idToPath.Clear();
+			FetchGamesFromJson();
 		}
 		static void WriteColoredConsole(string content, ConsoleColor color)
 		{
@@ -83,74 +94,83 @@ namespace ProtonWineManager
 					{
 						directories.Add(sr.ReadLine().Trim());
 					}
-				}                
-			}else{
-			    WriteColoredConsole(plLocation + " not found.", ConsoleColor.Red);
-			    Console.ReadKey();
-                System.Environment.Exit(0);
-            }
+				}
+				if (directories.Count == 0)
+				{
+					WriteColoredConsole("Please populate your Library.uud file.", ConsoleColor.Red);
+					Console.ReadKey();
+					System.Environment.Exit(0);
+				}
+			}
+			else
+			{
+				WriteColoredConsole(plLocation + " not found.", ConsoleColor.Red);
+				Console.ReadKey();
+				System.Environment.Exit(0);
+			}
 		}
-        static void WineManager(){
-            	string[] keys = idToName.Keys.ToArray();
-				WriteColoredConsole("Type a command after the number you want to use", ConsoleColor.Green);
-				for (int i = 0; i < keys.Length; i++)
+		static void WineManager()
+		{
+			WriteColoredConsole("Type a command after the number you want to use", ConsoleColor.Green);
+			for (int i = 0; i < keys.Length; i++)
+			{
+				WriteColoredConsole(string.Format("[{0,-3}] : {1} / APP ID : {2}", i, idToName[keys[i]], keys[i]), ConsoleColor.Yellow);
+			}
+			string response = Console.ReadLine();
+			if (commandKeys.Contains(response))
+			{
+				if (response.Equals("-h"))
 				{
-					WriteColoredConsole(string.Format("[{0}] : {1} / APP ID : {2}", i, idToName[keys[i]], keys[i]), ConsoleColor.Yellow);
-				}
-				string response = Console.ReadLine();
-				string[] commandKeys = commandDesc.Keys.ToArray();
-				if (commandKeys.Contains(response))
-				{
-					if (response.Equals("-h"))
+					for (int i = 0; i < commandKeys.Length; i++)
 					{
-						for (int i = 0; i < commandKeys.Length; i++)
-						{
-							WriteColoredConsole(commandKeys[i] + "\t" + commandDesc[commandKeys[i]], ConsoleColor.White);
-						}
-						WineManager();
-					}
-					if (response.Equals("-c"))
-					{
-						File.Delete(localJsonPath);
-						idToName.Clear();
-						idToPath.Clear();
-						FetchGamesJson();
-						WineManager();
-					}
-					if (response.Equals("-q"))
-					{
-						System.Environment.Exit(0);
+						WriteColoredConsole(commandKeys[i] + "\t" + commandDesc[commandKeys[i]], ConsoleColor.White);
 					}
 				}
-				if (!response.Contains(" "))
+				if (response.Equals("-c"))
 				{
-					CommandError();
+					ClearCache();
 				}
-				try
+				if (response.Equals("-q"))
 				{
-					string[] splitResponse = response.Split(" ");
-					WriteColoredConsole(string.Format("{1} Selected at : {0}", idToPath[keys[int.Parse(splitResponse[0])]], idToName[keys[int.Parse(splitResponse[0])]]), ConsoleColor.Blue);
-					Process process = new Process();
-					process.StartInfo.FileName = splitResponse[1];
-					process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
-					for (int i = 2; i < splitResponse.Length; i++)
-					{
-						process.StartInfo.ArgumentList.Add(splitResponse[i]);
-					}
-					process.StartInfo.EnvironmentVariables.Add("WINEPREFIX", idToPath[keys[int.Parse(splitResponse[0])]]);
-					process.Start();
-					WineManager();
+					System.Environment.Exit(0);
 				}
-				catch (Exception e)
+				if(response.Equals("-cls")){
+					Process.Start("reset");
+				}
+				WineManager();
+			}
+			else if (!response.Contains(" "))
+			{
+				CommandError();
+				WineManager();
+			}
+			try
+			{
+				string[] splitResponse = response.Split(" ");
+				WriteColoredConsole(string.Format("{1} Selected at : {0}", idToPath[keys[int.Parse(splitResponse[0])]], idToName[keys[int.Parse(splitResponse[0])]]), ConsoleColor.Blue);
+				Process process = new Process();
+				process.StartInfo.FileName = splitResponse[1];
+				process.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+				process.StartInfo.ArgumentList.Add("2>&1 >/dev/null");
+				for (int i = 2; i < splitResponse.Length; i++)
 				{
-					WriteColoredConsole(e.ToString(), ConsoleColor.Magenta);
-					CommandError();
-                    WineManager();
+					process.StartInfo.ArgumentList.Add(splitResponse[i]);
 				}
-        }
-        static void CommandError(){
-            WriteColoredConsole("Please check the command and try again.", ConsoleColor.Red);
+				process.StartInfo.EnvironmentVariables.Add("WINEPREFIX", idToPath[keys[int.Parse(splitResponse[0])]]);
+				process.Start();
+				WineManager();
+			}
+			catch (Exception e)
+			{
+				WriteColoredConsole(e.ToString(), ConsoleColor.Magenta);
+				CommandError();
+				WineManager();
+			}
+		}
+		static void CommandError()
+		{
+			WriteColoredConsole("Please check the command and try again.", ConsoleColor.Red);
 			Console.ReadKey();
-        }
-    }
+		}
+	}
 }
