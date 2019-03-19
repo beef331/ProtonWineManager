@@ -115,10 +115,11 @@ namespace ProtonWineManager
 						idToName.Clear();
 						idToPath.Clear();
 						FetchGamesJson();
+						WineManager();
 					}
 					if (response.Equals("-q"))
 					{
-						return;
+						System.Environment.Exit(0);
 					}
 				}
 				if (!response.Contains(" "))
